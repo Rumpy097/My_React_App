@@ -1,0 +1,211 @@
+
+* {
+  margin: 0;
+  padding: 0;
+  
+}
+
+html, body{
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+  
+  width: 100vw;
+}
+
+
+body{
+
+  background-image: url('/images/image1.jpg');
+  background-size:cover;
+  background-attachment: fixed;
+}
+
+#root {
+  height: 100%;
+  width: 100%;
+  display: flex; /* Optional, but good if you want to use flexbox */
+  flex-direction: column; /* Optional, to make the root behave as a column container */
+}
+
+.mainPage{
+
+  height: 100%;
+  width: 100%;
+  display: flex; /* Optional, but good if you want to use flexbox */
+  flex-direction: column; /* Optional, to make the root behave as a column container */
+  overflow: hidden;
+
+}
+
+.mainPage .title{
+  padding: 20px;
+  text-align: center;
+  font-family:Georgia, 'Times New Roman', Times, serif;
+}
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start; /* Ensures it starts from the top */
+  width: 100%;
+  max-height: 80vh; /* Prevents excessive height */
+  
+}
+
+.toDo {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid rgb(248, 238, 229);
+  border-radius: 5px;
+  background-color: rgb(251, 241, 232);
+  margin: 25px;
+  /* padding: 15px; */
+  align-items: center;
+  height: auto; /* Allows height to adjust to content */
+  min-height: fit-content;
+  max-height: 80vh; /* Prevents excessive height */
+  overflow: hidden; /* Avoids expanding unnecessarily */
+  flex: 1;
+}
+
+.toDo h2{
+  padding: 20px;
+  text-align: center;
+}
+
+.toDoBody {
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto; /* Enables scrolling when needed */
+  overflow-x: hidden;
+  height: auto; /* Adjusts naturally to content */
+  max-height: 70vh; /* Keeps it within viewport limits */
+  padding: 10px;
+  align-items: center;
+}
+
+.toDoBody ul{
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.body1 {
+  width: 300px;
+  max-width: 300px;
+  height: 130px;
+  background-color: rgb(245, 242, 237);
+  border: 1px solid rgb(245, 238, 229);
+  border-radius: 10px;
+  box-shadow: 5px 5px 5px rgb(143, 132, 115);
+  margin: 10px;
+  padding: 10px;
+  box-sizing: border-box;
+  position: relative;
+  padding-top: 27px;
+ 
+}
+
+.addTask{
+  width: 300px;
+  height: 80px;
+  background-color: rgb(247, 221, 179);
+  border: 1px solid rgb(229, 217, 202);
+  border-radius: 10px;
+  margin: 10px;
+  padding: 10px;
+  display: flex; /* Ensures inner content is aligned */
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap; /* Prevents breaking inside */
+}
+
+.priority{
+  position: absolute;
+  top: 0;
+  left:0;
+  right: 0;
+  margin: 0;
+  text-align: center;
+  padding: 3px 0;
+  width: 100%;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.priority-high{
+  background-color: red;
+  border: 1px solid red;
+  border-top-right-radius: 10px;
+  border-top-left-radius: 10px;
+}
+.priority-medium{
+  background-color:orange;
+  border: 1px solid orange;
+  border-top-right-radius: 10px;
+  border-top-left-radius: 10px;
+}
+.priority-low{
+  background-color: greenyellow;
+  border: 1px solid greenyellow;
+  border-top-right-radius: 10px;
+  border-top-left-radius: 10px;
+}
+
+
+
+.inProgress{
+
+  display: flex;
+  flex-direction: column;
+  border: 1px solid rgb(248, 238, 229);
+  border-radius: 5px;
+  background-color: rgb(251, 241, 232);
+  margin: 25px;
+  /* padding: 15px; */
+  align-items: center;
+  height: auto; /* Allows height to adjust to content */
+  min-height: fit-content;
+  max-height: 80vh; /* Prevents excessive height */
+  overflow: hidden; /* Avoids expanding unnecessarily */
+  flex: 1;
+ 
+}
+
+.inProgress h2{
+  text-align: center;
+  padding: 20px;
+  
+ }
+ 
+ .inProgress ul{
+  list-style: none;
+  padding: 0;
+  margin: 0;
+ }
+
+.done{
+  display: flex;
+  flex-direction: column;
+  border: 1px solid rgb(248, 238, 229);
+  border-radius: 5px;
+  background-color: rgb(251, 241, 232);
+  margin: 25px;
+  /* padding: 15px; */
+  align-items: center;
+  height: auto; /* Allows height to adjust to content */
+  min-height: fit-content;
+  max-height: 80vh; /* Prevents excessive height */
+  overflow: hidden; /* Avoids expanding unnecessarily */
+  flex: 1;
+}
+.done ul{
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+ .done h2{
+  text-align: center;
+  padding: 20px;
+ }
