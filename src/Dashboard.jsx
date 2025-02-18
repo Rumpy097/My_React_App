@@ -3,14 +3,19 @@ import { Dialog, DialogActions, DialogContent, DialogTitle, Button } from '@mui/
 import "react-datepicker/dist/react-datepicker.css";
 // Import the FontAwesomeIcon component
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+// import ReactTooltip from 'react-tooltip';  // Default import
 // Import the specific icon from Font Awesome's free solid set
-import { faRectangleXmark } from '@fortawesome/free-solid-svg-icons';
+import { faRectangleXmark, faCalendarDays, faArrowsRotate, faCircleCheck } from "@fortawesome/free-solid-svg-icons";
+
+// import { useState } from "react";
 import { useState } from "react";
+
 
 function Dashboard(){
 
 	console.log("Dashboard component rendered at", new Date().toLocaleTimeString());
 
+	// const ReactTooltip = require('react-tooltip').default;
 	const [tasks,setTasks] = useState([]);
 	const [taskTitle, setTaskTitle] = useState("");
 	const [description,setDescription] = useState("");
@@ -55,11 +60,12 @@ function Dashboard(){
 		}
 		else{
 			const newTask = {
-			title: taskTitle,
-			description: description,
-			priority: priority,
-			status: status,
-			dueDate: dueDate,
+				id: Date.now(),	
+				title: taskTitle,
+				description: description,
+				priority: priority,
+				status: status,
+				dueDate: dueDate,
 		  };
 
 	
@@ -134,14 +140,18 @@ function Dashboard(){
 
 	//inProgressTasks[],ToDoTask[],CompletedTask[]
 	const handleStartTask =(task)=>{
-		task.status="In Progress";
+		//task.status="In Progress";
 		setProgressTasks([...progressTasks,task]);
 		
-		const updatedTasks = tasks.map(t => t === task ? {...t, status : "In Progress"} : t);
-		const updatedToDoTasks = toDoTasks.filter ( t => t!== task);
+		const updatedTasks = tasks.map(t => t.id === task.id ? task : t);
+		const updatedToDoTasks = toDoTasks.filter ( t => t.id!== task.id);
 
 		setTasks(updatedTasks);
 		setToDoTasks(updatedToDoTasks);
+		setIsEditing(false);
+	    setEditingField("");
+		setHasEdited(false);
+		setOpenTask(false);
 	
 	};
 	
@@ -149,24 +159,26 @@ function Dashboard(){
 	
 	//handle start task should change status to in progress and the progress list should show it
 	const handleTaskCompletion =(task)=>{
-		task.status="Complete";
+		//task.status="Complete";
 		setCompletedTasks([...completedTasks,task]);
 		console.log("completed :"+task.title);
 
 	    const updatedTasks =	tasks.map(t => {
 
 			console.log(" before update " + t.status);
-			return t === task ? {...t, status: "Complete"} : t;
+			return t.id === task.id ? task : t;
 		
 		} ); //updates task in the tasks array
 
 
-		const updatedToDoTasks= toDoTasks.filter( t => t !== task); //creates a new array , adds tasks that satisfies the conditions
-		const updatedProgressTasks = progressTasks. filter( t => t !== task);
+		const updatedToDoTasks= toDoTasks.filter( t => t.id !== task.id); //creates a new array , adds tasks that satisfies the conditions
+		const updatedProgressTasks = progressTasks. filter( t => t.id !== task.id);
 
 		setToDoTasks(updatedToDoTasks);
 		setTasks(updatedTasks);
 		setProgressTasks(updatedProgressTasks);
+
+		
 
 
 	};
@@ -190,22 +202,22 @@ function Dashboard(){
 	}
 	
 	const handleSaveButton = () =>{
+		
 
-		setTasks((tasks) => tasks.map((task)=>(task.id === selectedTask.id ? editedValues : task)));
+		setTasks((tasks) => tasks.map((task)=>
+			{
+				console.log("selected task id: "+selectedTask.id+" task id "+task.id);
+				return (task.id === selectedTask.id ? editedValues : task);
+			}
+
+	));
 		setToDoTasks((tasks) => tasks.map((task)=>(task.id === selectedTask.id ? editedValues : task)));
 		setIsEditing(false);
 	    setEditingField("");
 		setHasEdited(false);
 		setOpenTask(false);
-		console.log("Save");
-
-		if(selectedTask.status==="In Progress"){
-			handleStartTask(selectedTask)
-		}
-		if(selectedTask.status==="Complete"){
-			handleTaskCompletion(selectedTask);
-		}
-
+		
+		console.log("Save priority: "+editedValues.priority);
 	}
 
 	const handleDeleteTask =(task) =>{
@@ -219,10 +231,36 @@ function Dashboard(){
 		setTasks(updatedTasks);
 		setProgressTasks(updatedProgressTasks);
 		setCompletedTasks(updateCompletedTasks);
-
+		setOpenTask(false);
 	}
 
-	 
+	const handlePushBack = (task ) => {
+		task.status="Incomplete"
+		const updatedProgressTasks = progressTasks. filter( t => t.id !== task.id);
+		setToDoTasks([...toDoTasks,task]);
+
+		const updatedTasks = tasks.map( t => { t.id = task.id ? task : t});
+
+		setProgressTasks(updatedProgressTasks);
+		setTasks(updatedTasks);
+		
+		
+	}
+	
+	const handleReopenTask = (task) => {
+
+		task.status ="In Progress"
+		const updatedCompletedTasks = completedTasks.filter( t =>t.id!=task.id);
+
+		setCompletedTasks(updatedCompletedTasks);
+		setProgressTasks([...progressTasks,task]);
+		
+		const updatedTasks = tasks.map(t => t.id === task.id ? task : t);
+		const updatedToDoTasks = toDoTasks.map(t => t.id === task.id ? task : t);
+
+		setTasks(updatedTasks);
+		setToDoTasks(updatedToDoTasks);
+	}
 
 	return(
 		<div className="mainPage">
@@ -242,9 +280,13 @@ function Dashboard(){
 								<li key={index} className="body1" onClick= {() => openTaskDialog(task)}> 
 								<div className={`priority priority-${task.priority.toLowerCase()}`}> {task.priority}</div>
 								Title: {task.title} <br/>
-								Description: {task.description} <br/>
-								Due Date: {task.dueDate} <br/>
-								Status: {task.status}
+								{task.description && 
+								<><span>Description: {task.description}</span><br /></>
+								}
+								
+								{/* Due Date: {task.dueDate} <br/> */}
+								{/* Status: {task.status}<br/> */}
+								<FontAwesomeIcon icon={faCalendarDays} style={{color: "#a8a4a4",}}/> {task.dueDate} 
 								</li>
 							);
 						}
@@ -328,28 +370,19 @@ function Dashboard(){
 									}
 								</p>
 
-								<p onClick={() => {startEditing("status")}}> <strong> Status :</strong>
 							
-									{isEditing && editingField === "status"?
-									(<select value={editedValues.status} onChange={(e) =>{handleEditChange("status",e.target.value)} }
-									onBlur={saveOnBlur}
-									onKeyDown={(e)=> e.key ==='Enter' && saveOnBlur}
-									autoFocus >
-						
-									<option value="Complete">Complete</option>
-									<option value="In Progress" >In Progress</option>
-									<option value="Incomplete">Incomplete</option>
-
-								</select> 
-									
-								) :
-									(<span>{editedValues.status ?? "empty"}</span>)
-									}</p>
-							
+							    <Button onClick={()=>{startEditing("status");
+									setEditedValues((prev)=>({...prev,"status":"In Progress"}));	
+									handleStartTask(editedValues);
+								}}> Start Task
+								
+								 </Button>
 								<Button onClick={()=>{handleDeleteTask(selectedTask)}}> Delete Task </Button>
 
 								{hasEdited &&
-								<Button onClick={()=>{handleSaveButton()}}>Save</Button>
+								<Button onClick={()=>{
+									console.log(" save click : "+ selectedTask.title);
+									handleSaveButton();}}>Save</Button>
 								}	
 
 						
@@ -392,12 +425,6 @@ function Dashboard(){
 								onChange={(e) => setDescription(e.target.value)}
 								placeholder="Enter Task Description"
 								/>
-								{/* <select value={status} onChange={(e) => setStatus(e.target.value)} >
-
-									<option value="Incomplete">Incomplete</option>
-									<option value="Complete">Complete</option>
-
-								</select> */}
 								</label>
 							</div>	
 							<div>
@@ -463,8 +490,30 @@ function Dashboard(){
 								<li key={index} className="body1"> 
 								<div className={`priority priority-${task.priority.toLowerCase()}`}> {task.priority}</div>
 								Title: {task.title} <br/>
-								Description: {task.description} <br/>
-								Due Date: {task.dueDate} <br/>
+								{task.description && 
+								<><span>Description: {task.description}</span> <br/></>}
+								
+								<FontAwesomeIcon icon={faCalendarDays} style={{color: "#a8a4a4",}}/> {task.dueDate} 
+								
+
+								<div className="change_status">
+								
+								<FontAwesomeIcon icon={faArrowsRotate} style={{color: "#bbbcbf",}} onClick={()=>{handlePushBack(task)}}/>
+								<span className="tooltip">Return to To-Do list</span>
+								
+								</div>
+								
+
+								<div className="change_status">
+								<FontAwesomeIcon icon={faCircleCheck}  onClick={()=>{handleTaskCompletion(task)}}/>
+								<span className="tooltip">Mark task as completed</span>
+								
+								</div>
+								
+								
+								{
+								/* data-tip="Mark task as completed"<ReactTooltip place="top" effect="solid" /> */}
+
 								</li>
 							);
 						}
@@ -488,8 +537,18 @@ function Dashboard(){
 								<li key={index} className="body1"> 
 								<div className={`priority priority-${task.priority.toLowerCase()}`}> {task.priority}</div>
 								Title: {task.title} <br/>
-								Description: {task.description} <br/>
-								Due Date: {task.dueDate} <br/>
+								{task.description &&
+								<><span>Description: {task.description}</span><br/></>}
+							
+							    <FontAwesomeIcon icon={faCalendarDays} style={{color: "#a8a4a4",}}/> {task.dueDate} 
+
+								<div className="change_status">
+								
+								<FontAwesomeIcon icon={faArrowsRotate} style={{color: "#bbbcbf",}} onClick={()=>{handleReopenTask(task)}}/>
+								<span className="tooltip">Reopen Task</span>
+								
+								</div>
+								
 								</li>
 							);
 						}
