@@ -34,6 +34,9 @@ function CompletedTasksPage(){
 
 		catch(e){
 			console.log("fetching error "+ e);
+            console.log("fetching error "+ e);
+            console.log("fetching error "+ e);
+            console.log("fetching error "+ e);
 
 		}
         
